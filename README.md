@@ -1,6 +1,6 @@
 # 🎰 Are You a Chud?
 
-A single-page meme website that determines your chud status via a slot-machine reveal animation. Dark, edgy, and unapologetically absurd.
+buh
 
 **Live:** [areyouachud.com](https://areyouachud.com) *(coming soon)*
 
