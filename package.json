@@ -1,0 +1,14 @@
+{
+  "name": "areyouachud",
+  "version": "1.0.0",
+  "description": "Are you a chud? Roll the dice and find out.",
+  "private": true,
+  "scripts": {
+    "dev": "npx wrangler pages dev . --port 8788",
+    "deploy": "npx wrangler pages deploy . --project-name=areyouachud --branch=main",
+    "deploy:preview": "npx wrangler pages deploy . --project-name=areyouachud --branch=preview"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}

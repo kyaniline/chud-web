@@ -1,0 +1,502 @@
+/* ============================================
+   ARE YOU A CHUD? — Styles
+   ============================================ */
+
+/* --- Custom Properties --- */
+:root {
+  --bg: #0a0a0a;
+  --bg-alt: #111111;
+  --text: #f0f0f0;
+  --text-muted: #888888;
+  --chud-red: #ff2222;
+  --chud-glow: #ff000066;
+  --chud-dark: #1a0000;
+  --chad-gold: #ffd700;
+  --chad-glow: #ffd70066;
+  --chad-dark: #1a1500;
+  --font-display: 'Anton', Impact, sans-serif;
+  --font-body: system-ui, -apple-system, sans-serif;
+  --slot-height: 100px;
+  --transition-speed: 0.4s;
+}
+
+/* --- Reset & Base --- */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- Background Image Layer --- */
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bg-layer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.bg-layer.visible {
+  opacity: 1;
+}
+
+.bg-layer.chud {
+  background-image: url('/assets/images/soyjak.webp');
+}
+
+.bg-layer.chud::after {
+  background: linear-gradient(
+    rgba(26, 0, 0, 0.75),
+    rgba(10, 0, 0, 0.9)
+  );
+}
+
+.bg-layer.chad {
+  background-image: url('/assets/images/gigachad.webp');
+}
+
+.bg-layer.chad::after {
+  background: linear-gradient(
+    rgba(26, 21, 0, 0.7),
+    rgba(10, 8, 0, 0.88)
+  );
+}
+
+/* --- Start Overlay --- */
+.start-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.start-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.start-content {
+  text-align: center;
+}
+
+.start-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  letter-spacing: 0.05em;
+  margin-bottom: 2rem;
+  background: linear-gradient(180deg, #fff 0%, #888 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: pulse-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow {
+  from { filter: drop-shadow(0 0 10px rgba(255,255,255,0.1)); }
+  to   { filter: drop-shadow(0 0 30px rgba(255,255,255,0.3)); }
+}
+
+.start-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 auto;
+  padding: 1.2rem 3rem;
+  background: transparent;
+  border: 2px solid var(--text-muted);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.start-btn:hover {
+  border-color: var(--text);
+  box-shadow: 0 0 30px rgba(255,255,255,0.1);
+  transform: scale(1.05);
+}
+
+.start-btn-text {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+}
+
+.start-btn-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+/* --- Main Content --- */
+.main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 2rem;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.main.visible {
+  opacity: 1;
+}
+
+/* --- Slot Machine --- */
+.slot-machine {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.slot-label {
+  font-family: var(--font-display);
+  font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+  color: var(--text-muted);
+  letter-spacing: 0.3em;
+  margin-bottom: 1rem;
+  opacity: 1;
+  transition: opacity var(--transition-speed) ease;
+}
+
+.slot-label.hidden {
+  opacity: 0;
+}
+
+.slot-window {
+  width: min(90vw, 600px);
+  height: var(--slot-height);
+  overflow: hidden;
+  border: 2px solid #333;
+  border-radius: 8px;
+  background: var(--bg-alt);
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,0.5),
+    0 0 15px rgba(255,255,255,0.03);
+  position: relative;
+}
+
+/* Gradient fade edges */
+.slot-window::before,
+.slot-window::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 25px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.slot-window::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--bg-alt), transparent);
+}
+
+.slot-window::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--bg-alt), transparent);
+}
+
+.slot-reel {
+  display: flex;
+  flex-direction: column;
+  transition: none;
+}
+
+.slot-item {
+  height: var(--slot-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.slot-item.chud {
+  color: var(--chud-red);
+}
+
+.slot-item.chad {
+  color: var(--chad-gold);
+}
+
+.slot-machine.spinning .slot-window {
+  border-color: #555;
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,0.5),
+    0 0 25px rgba(255,255,255,0.06);
+}
+
+.slot-machine.spinning .slot-reel {
+  filter: blur(2px);
+}
+
+.slot-machine.revealed .slot-reel {
+  filter: blur(0);
+  transition: filter 0.3s ease;
+}
+
+.slot-machine.hidden {
+  display: none;
+}
+
+/* Screen shake */
+@keyframes screen-shake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-4px) translateY(2px); }
+  20% { transform: translateX(3px) translateY(-2px); }
+  30% { transform: translateX(-3px) translateY(1px); }
+  40% { transform: translateX(2px) translateY(-1px); }
+  50% { transform: translateX(-2px) translateY(1px); }
+  60% { transform: translateX(1px); }
+  70% { transform: translateX(-1px); }
+}
+
+.shake {
+  animation: screen-shake 0.5s ease-out;
+}
+
+/* --- Slot glow on result --- */
+.slot-machine.result-chud .slot-window {
+  border-color: var(--chud-red);
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,0.5),
+    0 0 30px var(--chud-glow);
+}
+
+.slot-machine.result-chad .slot-window {
+  border-color: var(--chad-gold);
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,0.5),
+    0 0 30px var(--chad-glow);
+}
+
+/* --- Result Container --- */
+.result-container {
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  pointer-events: none;
+}
+
+.result-container.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.result-text {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.result-text.chud {
+  color: var(--chud-red);
+  text-shadow: 0 0 40px var(--chud-glow);
+}
+
+.result-text.chad {
+  color: var(--chad-gold);
+  text-shadow: 0 0 40px var(--chad-glow);
+}
+
+.taunt-text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  min-height: 1.4em;
+  font-style: italic;
+}
+
+/* --- Actions --- */
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.reroll-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 2.5rem;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
+  background: transparent;
+  border: 2px solid #444;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.reroll-btn:hover:not(:disabled) {
+  border-color: var(--text);
+  box-shadow: 0 0 25px rgba(255,255,255,0.08);
+  transform: scale(1.05);
+}
+
+.reroll-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.reroll-icon {
+  font-size: 1.4rem;
+}
+
+.share-buttons {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  background: transparent;
+  border: 1px solid #333;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.25s ease;
+}
+
+.share-btn:hover {
+  color: var(--text);
+  border-color: #555;
+}
+
+.share-btn svg {
+  flex-shrink: 0;
+}
+
+.share-copy.copied {
+  color: #4ade80;
+  border-color: #4ade80;
+}
+
+/* --- Mute Button --- */
+.mute-btn {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 50;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid #333;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.mute-btn:hover {
+  color: var(--text);
+  border-color: #555;
+}
+
+.mute-btn .mute-icon-off { display: none; }
+
+body.muted .mute-btn .mute-icon-on { display: none; }
+body.muted .mute-btn .mute-icon-off { display: block; }
+
+/* --- Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .slot-machine.spinning .slot-reel {
+    filter: none;
+  }
+}
+
+/* --- Mobile tweaks --- */
+@media (max-width: 480px) {
+  :root {
+    --slot-height: 80px;
+  }
+
+  .main {
+    padding: 1.5rem 1rem;
+  }
+
+  .reroll-btn {
+    padding: 0.9rem 2rem;
+    font-size: 1.1rem;
+  }
+
+  .share-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .share-btn {
+    justify-content: center;
+  }
+}
