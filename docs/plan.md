@@ -1,6 +1,6 @@
 # areyouachud.com — Implementation Plan
 
-**Version:** 1.1
+**Version:** 1.2
 **Date:** 2026-03-06
 **Reference:** [docs/requirements.md](./requirements.md)
 
@@ -19,8 +19,21 @@
 | Phase 6: Social Sharing | ✅ Done | Twitter/X share, copy link, OG meta tags |
 | Phase 7: PWA | ✅ Done | Manifest, service worker, offline support |
 | Phase 8: Analytics | ✅ Done | GA4 scaffold (needs measurement ID) |
-| Phase 9: Deploy | 🔲 Pending | Needs Cloudflare account + domain purchase |
+| Phase 9: Deploy | ✅ Done | Live at areyouachud.com, CI/CD active |
 | Phase 10: Polish | 🔲 Pending | Cross-browser testing, Lighthouse, final QA |
+
+### Changes Since v1.1
+
+- **Site deployed to production:** https://areyouachud.com is live on Cloudflare Pages
+- **Domain purchased:** `areyouachud.com` registered on Cloudflare Registrar
+- **CI/CD pipeline active:** GitHub Actions auto-deploys on push to `main`, previews on PRs
+- **Workflow split into two jobs:** `deploy-production` (push to main only) and `deploy-preview` (PRs only) — PRs no longer deploy to production
+- **Branch protection enabled:** `main` requires a PR with 1 approval before merging
+- **GitHub secrets configured:** `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` set via `gh secret set`
+- **Local secrets stored in `.env`** (gitignored) for wrangler CLI usage
+- **Repo pushed to GitHub:** https://github.com/kyaniline/chud-web
+- **Audio `stopAll()` fix:** Clears `onended` callbacks before stopping sources so bg music stays paused through spin→result transitions
+- **`.md` file changes excluded from production deploys** (workflow path filter)
 
 ### Changes Since v1.0
 
