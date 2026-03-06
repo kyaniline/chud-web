@@ -122,7 +122,10 @@
     },
 
     stopAll() {
-      this.sources.forEach(s => { try { s.stop(); } catch(e) {} });
+      this.sources.forEach(s => {
+        s.onended = null; // prevent bg resume
+        try { s.stop(); } catch(e) {}
+      });
       this.sources = [];
     },
 
