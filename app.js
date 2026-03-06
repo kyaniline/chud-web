@@ -41,14 +41,18 @@
     enabled: true,
     buffers: {},
     sources: [],
+    bgMusic: null,
+    bgGain: null,
+    BG_VOLUME: 0.15,
 
-    init() {
+    async init() {
       try {
         this.ctx = new (window.AudioContext || window.webkitAudioContext)();
       } catch (e) {
         console.warn('Web Audio API not supported');
       }
-      this.loadAll();
+      await this.loadAll();
+      this.startBgMusic();
     },
 
     async loadAll() {
@@ -57,6 +61,7 @@
         chud: '/assets/sounds/chud.mp3',
         notchud: '/assets/sounds/notchud.mp3',
         click: '/assets/sounds/click.mp3',
+        bg: '/assets/sounds/bg.mp3',
       };
       for (const [name, url] of Object.entries(sounds)) {
         try {
@@ -70,14 +75,49 @@
       }
     },
 
+    startBgMusic() {
+      if (!this.ctx || !this.buffers.bg) return;
+      this.bgGain = this.ctx.createGain();
+      this.bgGain.gain.value = this.BG_VOLUME;
+      this.bgGain.connect(this.ctx.destination);
+
+      this.bgMusic = this.ctx.createBufferSource();
+      this.bgMusic.buffer = this.buffers.bg;
+      this.bgMusic.loop = true;
+      this.bgMusic.connect(this.bgGain);
+      this.bgMusic.start(0);
+    },
+
+    pauseBg() {
+      if (this.bgGain) {
+        this.bgGain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.05);
+      }
+    },
+
+    resumeBg() {
+      if (this.bgGain && this.enabled) {
+        this.bgGain.gain.setTargetAtTime(this.BG_VOLUME, this.ctx.currentTime, 0.3);
+      }
+    },
+
     play(name) {
       if (!this.enabled || !this.ctx || !this.buffers[name]) return null;
       if (this.ctx.state === 'suspended') this.ctx.resume();
+
+      this.pauseBg();
+
       const source = this.ctx.createBufferSource();
       source.buffer = this.buffers[name];
       source.connect(this.ctx.destination);
       source.start(0);
       this.sources.push(source);
+
+      // Resume bg music when this sound ends
+      source.onended = () => {
+        this.sources = this.sources.filter(s => s !== source);
+        if (this.sources.length === 0) this.resumeBg();
+      };
+
       return source;
     },
 
@@ -89,7 +129,12 @@
     toggle() {
       this.enabled = !this.enabled;
       document.body.classList.toggle('muted', !this.enabled);
-      if (!this.enabled) this.stopAll();
+      if (!this.enabled) {
+        this.stopAll();
+        this.pauseBg();
+      } else {
+        this.resumeBg();
+      }
     }
   };
 
@@ -219,8 +264,17 @@
   }
 
   // ---- Event Handlers ----
-  function handleStart() {
-    AudioManager.init();
+  async function handleStart() {
+    // Disable button and show loading state
+    startBtn.disabled = true;
+    startBtn.classList.add('loading');
+    const btnText = startBtn.querySelector('.start-btn-text');
+    const btnSub = startBtn.querySelector('.start-btn-sub');
+    btnText.textContent = 'LOADING...';
+    btnSub.textContent = 'preparing your fate';
+
+    await AudioManager.init();
+
     startOverlay.classList.add('hidden');
     mainContent.classList.add('visible');
 
@@ -232,7 +286,7 @@
   function handleReroll() {
     if (isSpinning) return;
 
-    AudioManager.play('click');
+    AudioManager.play('spin');
     rerollCount++;
     localStorage.setItem(LS_KEY_REROLL, rerollCount.toString());
 

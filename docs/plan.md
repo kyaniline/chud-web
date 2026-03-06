@@ -1,8 +1,35 @@
 # areyouachud.com — Implementation Plan
 
-**Version:** 1.0
+**Version:** 1.1
 **Date:** 2026-03-06
 **Reference:** [docs/requirements.md](./requirements.md)
+
+---
+
+## Current Status
+
+| Phase | Status | Notes |
+|-------|--------|-------|
+| Phase 0: Scaffolding | ✅ Done | Git, npm, wrangler, file structure |
+| Phase 1: Layout & Theme | ✅ Done | Dark theme, Anton font, responsive |
+| Phase 2: Slot Animation | ✅ Done | 3.5s spin with deceleration, blur, screen shake |
+| Phase 3: RNG & Reroll | ✅ Done | 50/50 initial, 75/25 reroll, hard pity at 50 |
+| Phase 4: Images | ✅ Done | Soyjak/gigachad backgrounds with dark overlay |
+| Phase 5: Sound Effects | ✅ Done | User-provided sounds, bg music with auto-duck |
+| Phase 6: Social Sharing | ✅ Done | Twitter/X share, copy link, OG meta tags |
+| Phase 7: PWA | ✅ Done | Manifest, service worker, offline support |
+| Phase 8: Analytics | ✅ Done | GA4 scaffold (needs measurement ID) |
+| Phase 9: Deploy | 🔲 Pending | Needs Cloudflare account + domain purchase |
+| Phase 10: Polish | 🔲 Pending | Cross-browser testing, Lighthouse, final QA |
+
+### Changes Since v1.0
+
+- **Sound effects replaced by user:** `spin.mp3` (One Piece horn), `chud.mp3` (user-chosen), `notchud.mp3` (user-chosen)
+- **Background music system added:** Looping `bg.mp3` at 15% volume, auto-ducks (fades out) when SFX play, fades back in when SFX end, respects mute toggle
+- **Loading state on "FIND OUT" button:** Spinner + disabled state while audio loads, prevents double-click
+- **Reroll uses same spin sound as initial roll** (removed separate click sound)
+- **Dev script moved to root:** `./dev.sh start|stop|restart`
+- **Slot animation made responsive:** JS reads `--slot-height` CSS variable dynamically for mobile (80px) vs desktop (100px)
 
 ---
 
@@ -25,7 +52,17 @@ Build the site incrementally in 10 phases, each producing a testable artifact. T
 
 > **Action for user:** Download your preferred images and drop them into `assets/images/` as `soyjak.webp` and `gigachad.webp`. We'll use the placeholder URLs during development.
 
-### Sound Effects (Royalty-Free)
+### Sound Effects
+
+| File | Purpose | Source | Status |
+|------|---------|--------|--------|
+| `spin.mp3` | Spin / "Find Out" / reroll sound | User-provided (One Piece horn) | ✅ Replaced |
+| `chud.mp3` | "You are a chud" result | User-provided | ✅ Replaced |
+| `notchud.mp3` | "You aren't a chud" result | User-provided | ✅ Replaced |
+| `click.mp3` | Generic click (unused, kept as spare) | Mixkit | ✅ Downloaded |
+| `bg.mp3` | Background music loop (15% vol, auto-ducks) | User-provided | ⏳ Pending |
+
+#### Original Royalty-Free Sources (for reference)
 
 | Sound | Source | URL | License |
 |-------|--------|-----|---------|
@@ -33,8 +70,6 @@ Build the site incrementally in 10 phases, each producing a testable artifact. T
 | Sad trombone (chud) | Mixkit | https://mixkit.co/free-sound-effects/sad/ | Free, no attribution |
 | Triumphant fanfare (not chud) | Mixkit | https://mixkit.co/free-sound-effects/win/ | Free, no attribution |
 | Button click | Mixkit | https://mixkit.co/free-sound-effects/click/ | Free, no attribution |
-| Alt: Slot pack | Freesound (lukaso) | https://freesound.org/people/lukaso/packs/4497/ | CC0 / CC-BY |
-| Alt: Casino sounds | Pixabay | https://pixabay.com/sound-effects/search/slot%20machine/ | Pixabay License (free) |
 
 ---
 
@@ -660,15 +695,94 @@ Phase 0 (Scaffolding)
 
 ---
 
+## Appendix A: Sound Effect Research
+
+### Spin / "Find Out" Button — One Piece Horn
+
+| Source | URL |
+|--------|-----|
+| YouTube (100 One Piece SFX) | https://www.youtube.com/watch?v=t0VEOICvnsI |
+| Myinstants (One Piece soundboard) | https://www.myinstants.com/en/search/?name=one%20piece |
+| 101 Soundboards (One Piece Horn) | https://www.101soundboards.com/search/one-piece-horn |
+| YouTube (SFX Playlist by AniBits) | https://www.youtube.com/playlist?list=PL_NaoEZRt49rVzg2gmCAdTYskIboU8vbv |
+
+> Save as `assets/sounds/spin.mp3`
+
+### "You Are a Chud" — RDR2 Low Honor Sound
+
+| Source | URL |
+|--------|-----|
+| YouTube (Thatdumgamer) | https://www.youtube.com/watch?v=J1xjlkNLfmI |
+| YouTube (Shadow__Ninja) | https://www.youtube.com/watch?v=nsZmm2_Ffbg |
+| YouTube (Bond Factory) | https://www.youtube.com/watch?v=MUmpBJ1s4T4 |
+| Myinstants (instant play) | https://www.myinstants.com/en/instant/low-honor-rdr-2-38182/ |
+
+### "You Aren't a Chud" — Ghetto Smosh "Ahhhh"
+
+| Source | URL |
+|--------|-----|
+| YouTube (Copyright Free) | https://www.youtube.com/watch?v=G7U1BqanYeg |
+| YouTube (Sound Effect 2) | https://www.youtube.com/watch?v=vFJ4OAuYyqA |
+| Myinstants (instant play) | https://www.myinstants.com/en/instant/ghetto-smosh-ahh-83664/ |
+| Voicemod Tuna (soundboard) | https://tuna.voicemod.net/sound/0cb53b43-7d9f-42b0-891a-f6146e020310 |
+
+> **Note:** These are copyrighted sounds. For production use, source royalty-free alternatives or secure licensing. Save your chosen files as `assets/sounds/chud.mp3` and `assets/sounds/notchud.mp3`.
+
+---
+
 ## Quick Start Commands
 
 ```bash
 # After cloning:
 npm install                   # Install wrangler
-npm run dev                   # Local dev server at localhost:8788
+./dev.sh start                # Local dev server at localhost:8788
+./dev.sh stop                 # Stop dev server
+./dev.sh restart              # Restart dev server
 npm run deploy                # Deploy to production
 npm run deploy:preview        # Deploy preview branch
 
 # First-time Cloudflare setup:
 bash scripts/cloudflare-setup-guide.sh
+```
+
+---
+
+## Current File Structure
+
+```
+areyouachud.com/
+├── index.html                # Main page
+├── styles.css                # All styles (dark theme, slot machine, responsive)
+├── app.js                    # Core logic (RNG, animation, audio, sharing)
+├── manifest.json             # PWA manifest
+├── sw.js                     # Service worker (cache-first, offline fallback)
+├── dev.sh                    # Dev server start/stop/restart
+├── wrangler.toml             # Cloudflare Pages config
+├── package.json              # npm scripts (dev, deploy, deploy:preview)
+├── .gitignore
+├── .github/
+│   └── workflows/
+│       └── deploy.yml        # GitHub Actions CI/CD → Cloudflare Pages
+├── assets/
+│   ├── images/
+│   │   ├── soyjak.webp       # ✅ Placeholder downloaded
+│   │   ├── gigachad.webp      # ✅ Placeholder downloaded
+│   │   ├── icon-192.png       # ✅ Generated
+│   │   ├── icon-512.png       # ✅ Generated
+│   │   ├── og-preview.png     # ✅ Generated
+│   │   └── favicon.ico        # ✅ Generated
+│   └── sounds/
+│       ├── spin.mp3           # ✅ User-provided (One Piece horn)
+│       ├── chud.mp3           # ✅ User-provided
+│       ├── notchud.mp3        # ✅ User-provided
+│       ├── click.mp3          # ✅ Downloaded (unused spare)
+│       └── bg.mp3             # ⏳ User to provide (background music loop)
+├── scripts/
+│   ├── setup.sh              # Install deps, verify wrangler
+│   ├── deploy.sh             # Deploy to production
+│   ├── deploy-preview.sh     # Deploy preview branch
+│   └── cloudflare-setup-guide.sh  # Interactive Cloudflare walkthrough
+└── docs/
+    ├── requirements.md        # Full requirements spec
+    └── plan.md                # This document
 ```

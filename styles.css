@@ -154,6 +154,28 @@ body::before {
   transform: scale(1.05);
 }
 
+.start-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.start-btn.loading .start-btn-text::after {
+  content: '';
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-left: 0.5em;
+  border: 2px solid transparent;
+  border-top-color: var(--text);
+  border-radius: 50%;
+  animation: spin-loader 0.6s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin-loader {
+  to { transform: rotate(360deg); }
+}
+
 .start-btn-text {
   font-family: var(--font-display);
   font-size: 1.5rem;
